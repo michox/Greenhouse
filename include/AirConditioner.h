@@ -17,38 +17,38 @@ private:
 
     bool tooCold()
     {
-        if (isnan(bottomTemperature))
+        if (isnan(temperature))
         {
             return false;
         }
-        return (bottomTemperature < targetMinimumTemperature);
+        return (temperature < targetMinimumTemperature);
     }
 
     bool tooHot()
     {
-        if (isnan(topTemperature))
+        if (isnan(temperature))
         {
             return false;
         }
-        return (topTemperature > targetMaximumTemperature);
+        return (temperature > targetMaximumTemperature);
     }
 
     bool warmEnough()
     {
-        if (isnan(bottomTemperature))
+        if (isnan(temperature))
         {
             return true;
         }
-        return (bottomTemperature > targetMinimumTemperature + 2);
+        return (temperature > targetMinimumTemperature + 2);
     }
 
     bool coolEnough()
     {
-        if (isnan(topTemperature))
+        if (isnan(temperature))
         {
             return true;
         }
-        return (topTemperature < targetMaximumTemperature - 5);
+        return (temperature < targetMaximumTemperature - 5);
     }
 
 public:
@@ -81,20 +81,16 @@ public:
         if (tooCold())
         {
             working++;
-              Serial.printf("working++ heater. working : %d\n", working);
+            Serial.printf("working++ heater. working : %d\n", working);
 
             while (!warmEnough())
             {
                 digitalWrite(HEATER, HIGH);
-                digitalWrite(FAN, HIGH);
-                vTaskDelay(30000 / portTICK_PERIOD_MS);
+                vTaskDelay(3000 / portTICK_PERIOD_MS);
             }
             digitalWrite(HEATER, LOW);
-            vTaskDelay(30000 / portTICK_PERIOD_MS);
-            digitalWrite(FAN, LOW);
             working--;
-              Serial.printf("working-- heater. working : %d\n", working);
-
+            Serial.printf("working-- heater. working : %d\n", working);
         }
         else if (tooHot())
         {
@@ -110,7 +106,6 @@ public:
             digitalWrite(FAN, LOW);
             working--;
             Serial.printf("working-- fan. working : %d\n", working);
-
         }
     }
 };

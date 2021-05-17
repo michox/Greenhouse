@@ -101,7 +101,7 @@ public:
             {
                 Serial.println("Cooling...");
                 digitalWrite(FAN, HIGH);
-                vTaskDelay(30000 / portTICK_PERIOD_MS);
+                vTaskDelay(3000 / portTICK_PERIOD_MS);
             }
             digitalWrite(FAN, LOW);
             working--;

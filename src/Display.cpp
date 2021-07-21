@@ -34,7 +34,7 @@ void msOverlay(OLEDDisplay *display, OLEDDisplayUiState *state)
 {
 }
 
-void drawMainScreen(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
+void drawMainFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
 {
     display->displayOn();
     display->setFont(ArialMT_Plain_16);
@@ -72,7 +72,7 @@ void temperatureConfig(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t 
     display->drawString(5, 36, "max alt:" + String(ac.getMaximumTemperature()) + " C, neu: " + String(areas[1].readDailyTarget() / 3, 0) + " C");
 }
 
-void rtcScreen(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
+void rtcFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
 {
     display->clear();
     display->setFont(ArialMT_Plain_24);
@@ -80,19 +80,29 @@ void rtcScreen(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16
     vTaskDelay(100 / portTICK_PERIOD_MS);
 }
 
+void waterLowFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
+{
+    display->clear();
+    display->setFont(ArialMT_Plain_24);
+    if (waterAvailable)
+        display->drawString(17, 12, "Wasser niedrig");
+    else
+        display->drawString(17, 12, "Wasser leer!");
+}
+
 // This array keeps function pointers to all frames
 
 FrameCallback frames[] = {
     screenOff,
-    drawMainScreen,
+    waterLowFrame,
+    drawMainFrame,
     areaInfo<0>,
     areaInfo<1>,
     areaInfo<2>,
     areaInfo<3>,
     temperatureConfig,
-    rtcScreen,
+    rtcFrame,
 };
-int frameCount = 8;
 
 // Overlays are statically drawn on top of a frame. It is not used here but the code had difficulties running without specifying anything
 OverlayCallback overlays[] = {msOverlay};
@@ -124,7 +134,7 @@ void displayTask(void *)
     ui.disableAutoTransition();
 
     // Add frames
-    ui.setFrames(frames, frameCount);
+    ui.setFrames(frames, FRAME_COUNT);
     ui.setOverlays(overlays, overlaysCount);
 
     // Initialising the UI will init the display too.
@@ -133,7 +143,8 @@ void displayTask(void *)
     if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0)
     {
         ui.switchToFrame(1);
-        working++;  Serial.printf("working++ Display. working : %d\n", working);
+        working++;
+        Serial.printf("working++ Display. working : %d\n", working);
     }
     else
     {
@@ -149,7 +160,8 @@ void displayTask(void *)
         {
             if (displayTimeout())
             {
-                working--;  Serial.printf("working-- Display. working : %d\n", working);
+                working--;
+                Serial.printf("working-- Display. working : %d\n", working);
 
                 ui.switchToFrame(0);
             }

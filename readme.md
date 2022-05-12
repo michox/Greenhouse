@@ -139,12 +139,19 @@ solar panel
 ![](photos/solar.jpg) 
 battery at full charge!
 ![](photos/solar-charge.jpg) 
+The snail fence
+![](photos/snail-fence.jpg) 
+
 This is where the water is taken in
 ![](photos/water-intake.jpg)
-Here the pump is distributing it
+Here the pump distributing it. I broke one of the connectors and need to get a replacement so it's leaking right now but that should get fixed soon.
 ![](photos/water-distribution.jpg)
 The hoses and wiring of the snail fence and hygrometers (we will install the snail fence later)
 ![](photos/water-distribution-2.jpg) 
+Installing the drip hoses
+![](photos/water-running.jpg) 
+it's running!
+![](photos/water-running-2.jpg) 
 
 # Conclusion
 

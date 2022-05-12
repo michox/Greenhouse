@@ -124,27 +124,27 @@ Things from China have gotten significantly more expensive since I bought these 
 # Pictures
 
 Me assembling the box.
-![](photos\box.jpg)
+![](photos/box.jpg)
 I did not have any hinges so I 3D printed some with my resin printer
-![](photos\hinges.jpg) 
+![](photos/hinges.jpg) 
 They work!
-![](photos\box-open.jpg) 
+![](photos/box-open.jpg) 
 Assembling the electronics
-![](photos\electronics.jpg) 
+![](photos/electronics.jpg) 
 the fans
-![](photos\fans.jpg) 
+![](photos/fans.jpg) 
 this is where the fans get their air from
-![](photos\intake.jpg) 
+![](photos/intake.jpg) 
 solar panel
-![](photos\solar.jpg) 
+![](photos/solar.jpg) 
 battery at full charge!
-![](photos\solar-charge.jpg) 
+![](photos/solar-charge.jpg) 
 This is where the water is taken in
-![](photos\water-intake.jpg)
+![](photos/water-intake.jpg)
 Here the pump is distributing it
-![](photos\water-distribution.jpg)
+![](photos/water-distribution.jpg)
 The hoses and wiring of the snail fence and hygrometers (we will install the snail fence later)
-![](photos\water-distribution-2.jpg) 
+![](photos/water-distribution-2.jpg) 
 
 # Conclusion
 
@@ -152,4 +152,4 @@ This was a fun project and I had a chance to apply my skills in engineering and 
 
 
 And as a final treat my mothers beautiful garden
-![](photos\flowers.jpg) 
+![](photos/flowers.jpg) 

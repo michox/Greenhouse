@@ -75,7 +75,7 @@ Next, I thought about what parts my system would need to consist of and what eac
 
 Next, I started looking for parts and thinking about how I may build it cost-effectively with the parts on the market. There is no point in designing the perfect system if you can&#39;t build it because you can&#39;t find the right parts. For example, I had to get multiple adapters between thread sizes and a pressure regulator because the pump would deliver more pressure than the drip hose could endure. I made a more detailed module diagram of the water distribution since this one was the most complicated and I wanted to visualize what adaptors I needed and how everything fits together.
 
-![](photos/water-module.png.png)
+![](photos/water-module.png)
 
 I thought about making diagrams for the electronics and software as well. but I feel like the code and electronic schematics are pretty self-explanatory, and since I am a busy man, I will leave it at that. If you have any questions, please create a github issue and I will try to answer it.
 

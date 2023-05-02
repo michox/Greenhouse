@@ -3,7 +3,7 @@
 
 enum Frames{
     SCREEN_OFF,
-    WATER_LOW_FRAME,
+    ALERT_FRAME,
     MAIN_FRAME,
     AREA_FRAME_0,
     AREA_FRAME_1,

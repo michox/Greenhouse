@@ -4,6 +4,7 @@
 #include "AirConditioner.h"
 #include "Clock.h"
 #include "SH1106Wire.h"
+#include "FreeRTOS.h"
 
 #define TIMEOUT_TICKS 300
 
@@ -34,7 +35,7 @@ void msOverlay(OLEDDisplay *display, OLEDDisplayUiState *state)
 {
 }
 
-void drawMainFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
+void mainFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
 {
     display->displayOn();
     display->setFont(ArialMT_Plain_16);
@@ -72,22 +73,26 @@ void temperatureConfig(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t 
     display->drawString(5, 36, "max alt:" + String(ac.getMaximumTemperature()) + " C, neu: " + String(areas[1].readDailyTarget() / 3, 0) + " C");
 }
 
-void rtcFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
+void clockFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
 {
     display->clear();
     display->setFont(ArialMT_Plain_24);
     display->drawString(17, 12, systemTime.getTime());
-    vTaskDelay(100 / portTICK_PERIOD_MS);
+    // vTaskDelay(100 / portTICK_PERIOD_MS);
 }
 
 void waterLowFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
 {
     display->clear();
-    display->setFont(ArialMT_Plain_24);
-    if (waterAvailable)
-        display->drawString(17, 12, "Wasser niedrig");
-    else
+    display->setFont(ArialMT_Plain_16);
+    if (pumpIsBlocked)
+    {
+        display->drawString(17, 12, "Pumpe Fehler");
+    }
+    else if (!waterAvailable)
         display->drawString(17, 12, "Wasser leer!");
+    // else if (waterLow)
+    //     display->drawString(17, 12, "Wasser niedrig");
 }
 
 // This array keeps function pointers to all frames
@@ -95,13 +100,13 @@ void waterLowFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, i
 FrameCallback frames[] = {
     screenOff,
     waterLowFrame,
-    drawMainFrame,
+    mainFrame,
     areaInfo<0>,
     areaInfo<1>,
     areaInfo<2>,
     areaInfo<3>,
     temperatureConfig,
-    rtcFrame,
+    clockFrame,
 };
 
 // Overlays are statically drawn on top of a frame. It is not used here but the code had difficulties running without specifying anything
@@ -117,7 +122,7 @@ bool displayTimeout()
 void displayTask(void *)
 {
     Serial.print("Starting display Task...");
-
+    xSemaphoreTake(mutex, portMAX_DELAY);
     ui.setTargetFPS(24);
 
     // Customize the active and inactive symbol
@@ -142,19 +147,24 @@ void displayTask(void *)
 
     if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0)
     {
-        ui.switchToFrame(1);
+
+        if (waterAvailable && !pumpIsBlocked)
+            ui.switchToFrame(MAIN_FRAME);
+        else
+            ui.switchToFrame(ALERT_FRAME);
         working++;
         Serial.printf("working++ Display. working : %d\n", working);
     }
     else
     {
-        ui.switchToFrame(0);
+        ui.switchToFrame(SCREEN_OFF);
     }
 
     ui.update();
-    Serial.println("display task started");
+    xSemaphoreGive(mutex);
     while (true)
     {
+        xSemaphoreTake(mutex, portMAX_DELAY);
         int timeBudget = ui.update();
         if (timeBudget > 0)
         {
@@ -162,10 +172,10 @@ void displayTask(void *)
             {
                 working--;
                 Serial.printf("working-- Display. working : %d\n", working);
-
-                ui.switchToFrame(0);
+                ui.switchToFrame(SCREEN_OFF);
             }
             vTaskDelay(timeBudget / portTICK_PERIOD_MS);
         }
+        xSemaphoreGive(mutex);
     }
 }

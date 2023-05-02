@@ -1,3 +1,4 @@
 #pragma once
 extern float flow;                   // Calculated litres/hour
-void flowMeasuringTask();
+extern float averageFlow;            // Calculated litres/hour
+void flowMeasuringTask(void *);

@@ -1,12 +1,13 @@
 #include "FreeRTOS.h"
 #include "button.h"
+#include "Pump.h"
 #include "Sleep.h"
 #include "Clock.h"
 #include "Display.h"
 #include "Temperature.h"
 #include "Watering.h"
 #include "AirConditioner.h"
-
+#include "Pinout.h"
 void buttonTask(void *)
 {
 
@@ -18,9 +19,14 @@ void buttonTask(void *)
     {
         if (xQueueReceive(button_events, &ev, portMAX_DELAY))
         {
+            xSemaphoreTake(mutex, portMAX_DELAY);
+            int currentFrame = ui.getUiState()->currentFrame;
             if ((ev.pin == BUTTON) && (ev.event == BUTTON_HELD) && xSemaphoreTake(eventSemaphore, 0))
             {
-                int currentFrame = ui.getUiState()->currentFrame;
+                if (currentFrame == ALERT_FRAME)
+                {
+                    pumpIsBlocked = false;
+                }
                 if (currentFrame == MAIN_FRAME)
                 {
                     maxTemperature = 0;
@@ -28,7 +34,8 @@ void buttonTask(void *)
                 }
                 else if (currentFrame >= AREA_FRAME_0 && currentFrame <= AREA_FRAME_3)
                 {
-                    areas[currentFrame - 2].switchMode();
+
+                    areas[currentFrame - AREA_FRAME_0].switchMode();
                 }
                 else if (currentFrame == TEMPERATURE_FRAME)
                 {
@@ -38,27 +45,28 @@ void buttonTask(void *)
                 }
                 else if (currentFrame == CLOCK_FRAME)
                 {
-                    rtc.setTime(12, 0, 0);
+                    rtc.setDateTime(1, 1, 1, 0, 22, 12, 0, 0);
                     systemTime.setTime(rtc.getSecond(), rtc.getMinute(), rtc.getHour(), 1, 1, 2021);
                 }
             }
             else if ((ev.pin == BUTTON) && (ev.event == BUTTON_UP && xSemaphoreGive(eventSemaphore) != pdTRUE))
             {
-                int currentFrame = ui.getUiState()->currentFrame;
                 if (currentFrame == SCREEN_OFF)
                 {
                     working++;
                     Serial.printf("working++ Display. working : %d\n", working);
-                    if (!waterLow)
-                        ui.nextFrame(); //skip water low screen if water is not low
+                    if (waterAvailable && !pumpIsBlocked)
+                        ui.switchToFrame(MAIN_FRAME);
                 }
                 else if (currentFrame == CLOCK_FRAME)
                 {
                     working--;
                     Serial.printf("working-- Display. working : %d\n", working);
                 }
+
                 ui.nextFrame();
             }
+            xSemaphoreGive(mutex);
         }
     }
 }

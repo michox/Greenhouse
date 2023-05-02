@@ -13,8 +13,8 @@ public:
         // value but if you want you can change it below.
 
         float value = analogRead(pin);        //Read analog value
-        value = constrain(value, 400, 1023);   //Keep the ranges!
-        value = map(value, 400, 4096, 100, 0); //Map value : 400 will be 100 and 4096 will be 0
+        value = constrain(value, 0, 1023);   //Keep the ranges!
+        value = map(value, 0, 1023, 0, 100); //Map value : 400 will be 100 and 4096 will be 0
         return value;
     }
     bool isDry(){

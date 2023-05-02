@@ -3,6 +3,7 @@
 #include "Temperature.h"
 #include "Sleep.h"
 #include "Preferences.h"
+#include "HTU21D.h"
 
 extern Preferences preferences;
 
@@ -17,7 +18,7 @@ private:
 
     bool tooCold()
     {
-        if (isnan(temperature))
+        if (isnan(temperature) || temperature == HTU21D_ERROR)
         {
             return false;
         }
@@ -26,7 +27,7 @@ private:
 
     bool tooHot()
     {
-        if (isnan(temperature))
+        if (isnan(temperature) || temperature == HTU21D_ERROR)
         {
             return false;
         }
@@ -35,7 +36,7 @@ private:
 
     bool warmEnough()
     {
-        if (isnan(temperature))
+        if (isnan(temperature) || temperature == HTU21D_ERROR)
         {
             return true;
         }
@@ -44,19 +45,24 @@ private:
 
     bool coolEnough()
     {
-        if (isnan(temperature))
+        if (isnan(temperature) || temperature == HTU21D_ERROR)
         {
             return true;
         }
-        return (temperature < targetMaximumTemperature - 5);
+        return (temperature < targetMaximumTemperature - 2);
     }
 
 public:
     AirConditioner()
     {
+    }
+
+    void begin()
+    {
         pinMode(HEATER, OUTPUT);
         pinMode(FAN, OUTPUT);
-
+        digitalWrite(HEATER, RELAY_OFF);
+        digitalWrite(FAN, RELAY_OFF);
         this->targetMaximumTemperature = preferences.getInt("maxTemp", DEFAULT_MAX_TEMP);
         this->targetMinimumTemperature = preferences.getInt("minTemp", DEFAULT_MIN_TEMP);
     }
@@ -85,10 +91,11 @@ public:
 
             while (!warmEnough())
             {
-                digitalWrite(HEATER, HIGH);
+                Serial.println("heating");
+                digitalWrite(HEATER, RELAY_ON);
                 vTaskDelay(3000 / portTICK_PERIOD_MS);
             }
-            digitalWrite(HEATER, LOW);
+            digitalWrite(HEATER, RELAY_OFF);
             working--;
             Serial.printf("working-- heater. working : %d\n", working);
         }
@@ -100,10 +107,10 @@ public:
             while (!coolEnough())
             {
                 Serial.println("Cooling...");
-                digitalWrite(FAN, HIGH);
+                digitalWrite(FAN, RELAY_ON);
                 vTaskDelay(3000 / portTICK_PERIOD_MS);
             }
-            digitalWrite(FAN, LOW);
+            digitalWrite(FAN, RELAY_OFF);
             working--;
             Serial.printf("working-- fan. working : %d\n", working);
         }

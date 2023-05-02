@@ -3,9 +3,7 @@
 AirConditioner ac;
 void airConditioningTask(void *)
 {
-    Serial.print("Starting AC Task...");
-    Serial.println(" started");
-
+    ac.begin();
     while (true)
     {
         ac.regulate();

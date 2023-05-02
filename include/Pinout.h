@@ -1,5 +1,8 @@
 #pragma once
 
+#define RELAY_ON LOW
+#define RELAY_OFF HIGH
+
 #define HYGRO_1 GPIO_NUM_36
 #define HYGRO_2 GPIO_NUM_39
 #define HYGRO_3 GPIO_NUM_34
@@ -13,24 +16,21 @@
 #define AREA_SOLENOID_3 GPIO_NUM_5
 #define AREA_SOLENOID_4 GPIO_NUM_18
 
-#define DHT_TOP GPIO_NUM_27
-#define DHT_BOTTOM GPIO_NUM_14
-
-#define FLOW_METER GPIO_NUM_12
+#define FLOW_METER GPIO_NUM_14
 
 #define SDA GPIO_NUM_13
 #define SCL GPIO_NUM_4
 
-#define AUTO_MODE_SWITCH GPIO_NUM_1
-
 #define WATER_AVAILABLE GPIO_NUM_23
 #define WATER_LOW GPIO_NUM_22
 
-#define PUMP GPIO_NUM_21
-#define HEATER GPIO_NUM_3
+#define PUMP GPIO_NUM_3
+#define HEATER GPIO_NUM_21
 #define FAN GPIO_NUM_19
 
 #define BUTTON GPIO_NUM_15
+
+extern SemaphoreHandle_t mutex;
 
 #ifdef DEBUGGER
 #define HYGRO_1 GPIO_NUM_36
@@ -53,8 +53,6 @@
 
 #define SDA GPIO_NUM_2
 #define SCL GPIO_NUM_4
-
-#define AUTO_MODE_SWITCH GPIO_NUM_1
 
 #define WATER_AVAILABLE GPIO_NUM_23
 #define WATER_LOW GPIO_NUM_22

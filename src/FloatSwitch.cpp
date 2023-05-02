@@ -6,8 +6,10 @@ bool waterLow;
 
 void floatSwitchTask(void*){
     while (true){
-        waterAvailable =  digitalRead(WATER_AVAILABLE);
+        xSemaphoreTake(mutex, portMAX_DELAY);
+        waterAvailable = digitalRead(WATER_AVAILABLE);
         waterLow = digitalRead(WATER_LOW);
-        vTaskDelay(100);
+        xSemaphoreGive(mutex);
+        vTaskDelay(500);
     }
 }

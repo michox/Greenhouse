@@ -1,4 +1,7 @@
 {
     "cmake.configureOnOpen": false,
-    "jira-plugin.workingProject": ""
+    "jira-plugin.workingProject": "",
+    "files.associations": {
+        "fstream": "cpp"
+    }
 }

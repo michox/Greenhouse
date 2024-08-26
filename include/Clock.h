@@ -1,9 +1,9 @@
-#include "Rtc_Pcf8563.h"
+#include "pcf8563.h"
 #include "ESP32Time.h"
 
-extern Rtc_Pcf8563 rtc;
+extern PCF8563_Class rtc;
 extern ESP32Time systemTime;
 
-#define RESET_HOUR 5
+#define RESET_HOUR 20
 
 void clockTask(void *);

@@ -28,7 +28,7 @@ private:
 
     char *preferencesKey;
     float dailyTarget; // l
-    uint64_t timeOfLastWaterCalculation;
+    uint64_t timeOfLastWaterCalculation = 0;
 
 public:
     WATERING_MODE mode = MANU_MODE;
@@ -65,7 +65,7 @@ public:
         return hygro->read();
     }
 
-    float readSpentWaterVolume()
+    float getSpentWaterVolume()
     {
         switch (solenoidPin)
         {
@@ -78,7 +78,7 @@ public:
         case AREA_SOLENOID_4:
             return spentWaterVolume4;
         default:
-            return 0;
+            return 999; //error
         }
     }
 
@@ -103,7 +103,7 @@ public:
 
     float spentLiters()
     {
-        return readSpentWaterVolume() / 1000;
+        return getSpentWaterVolume() / 1000;
     }
 
     bool needsMoreWater()
@@ -120,22 +120,25 @@ public:
 
     bool water()
     {
-        countWater();
+        xSemaphoreTake(wateringMutex, portMAX_DELAY);
         if (pump.notBlocked())
         {
             if (waterAvailable && needsMoreWater())
             {
+                countWater();
                 digitalWrite(solenoidPin, RELAY_ON);
                 if (!pump.isRunning())
                 {
                     pump.run();
                 }
+                xSemaphoreGive(wateringMutex);
                 return true;
             }
             else
             {
                 digitalWrite(solenoidPin, RELAY_OFF);
                 pump.stop();
+                xSemaphoreGive(wateringMutex);
                 return false;
             }
         }
@@ -145,17 +148,23 @@ public:
             pump.stop();
             digitalWrite(solenoidPin, RELAY_OFF);
             pump.ticksSincePumpStart = ticksSincePumpStart;
+            xSemaphoreGive(wateringMutex);
             return false;
         }
+        xSemaphoreGive(wateringMutex);
     }
 
-    bool countWater()
-    {
+    void countWater()
+    {        
         auto timeOfThisWaterCalculation = millis();
+        if (timeOfLastWaterCalculation == 0) // first time
+        {
+            timeOfLastWaterCalculation = timeOfThisWaterCalculation;
+            return;
+        }
         auto millisSinceLastCalculation = timeOfThisWaterCalculation - timeOfLastWaterCalculation; // should be rollover safe
         timeOfLastWaterCalculation = timeOfThisWaterCalculation;
         float spentWaterSinceLastCalculation = flow / 60. * millisSinceLastCalculation; // / 1000 ms/s *1000 ml/l
-        setSpentWaterVolume(readSpentWaterVolume() + spentWaterSinceLastCalculation);
-        return spentWaterSinceLastCalculation > 10;
+        setSpentWaterVolume(getSpentWaterVolume() + spentWaterSinceLastCalculation);
     }
 };

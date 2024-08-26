@@ -20,8 +20,8 @@ void temperatureMeasuringTask(void *)
     while (true)
     {
         working++; // don't want the device go to sleep mid through a reading
-        xSemaphoreTake(mutex, portMAX_DELAY);
         Serial.printf("working++ temperature. working : %d\n", working);
+        xSemaphoreTake(mutex, portMAX_DELAY);
         humidity = htu.readCompensatedHumidity();
         temperature = htu.readTemperature();
         Serial.printf("temperature = %.2f, humidity = %.2f", temperature, humidity);
@@ -31,7 +31,7 @@ void temperatureMeasuringTask(void *)
             temperatureOld = temperature;
             if (temperature > maxTemperature)
                 maxTemperature = temperature;
-            if (temperature < minTemperature)
+            else if (temperature < minTemperature)
                 minTemperature = temperature;
         }
         else

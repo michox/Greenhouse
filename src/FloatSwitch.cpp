@@ -2,13 +2,16 @@
 #include "Pinout.h"
 
 bool waterAvailable;
-bool waterLow;
 
 void floatSwitchTask(void*){
+    
     while (true){
         xSemaphoreTake(mutex, portMAX_DELAY);
+        #ifdef DEBUG
+        waterAvailable = true;//digitalRead(WATER_AVAILABLE);
+        #else
         waterAvailable = digitalRead(WATER_AVAILABLE);
-        waterLow = digitalRead(WATER_LOW);
+        #endif
         xSemaphoreGive(mutex);
         vTaskDelay(500);
     }

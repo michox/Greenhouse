@@ -38,18 +38,20 @@ public:
         if (ticksSincePumpStart < 30)
         {
             pumpIsBlocked = false;
-            return true;
         }
         else if (averageFlow > 0.1)
         {
             pumpIsBlocked = false;
-            return true;
         }
         else
         {
+            #ifdef DEBUG
+            pumpIsBlocked = false;
+            #else
             pumpIsBlocked = true;
-            return false;
+            #endif
         }
+        return !pumpIsBlocked;
     }
 };
 extern Pump pump;

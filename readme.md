@@ -106,20 +106,29 @@ Since my mother did not want me to spend much money, I ordered most parts from A
 | PART-019 | Battery | 60Wh | low-cost, >= 60 Wh | 1 | 18 | get locally |
 | PART-020 | Heater | | 100W, 12V | 1 | 10,59 | [Link](https://www.aliexpress.com/item/32967951841.html) |
 | PART-021 | ESP32 | | low-cost, I2C interface, USB flashing, | 1 | 4,62 | [Link](https://www.aliexpress.com/item/32834130422.html) |
-| PART-022 | Real Time Clock module | I2C, Battery mount | I2C, Battery mount | 1 | 0,32 | [Link](https://www.aliexpress.com/item/33003227226.html) |
+| PART-022 | Real Time Clock module | Based on PCF8563T | I2C, Battery mount | 1 | 0,32 | [Link](https://aliexpress.com/item/1005006438572175.html) |
 | PART-023 | Hygrometer | Analog reading | 3.3V, low-cost | 8 | 0,23 | [Link](https://www.aliexpress.com/item/33048567290.html) |
-| PART-024 | Copper Tape | 50mx5mm | low-cost, stable enough not to rip too easily | 3 | 2,40 | [Link](https://www.aliexpress.com/item/4000308076266.html) |
-| PART-025 | 5V Regulator | 2A, 10pc per lot | input 12V, output > 1A | 1 | 2,18 | [Link](https://www.aliexpress.com/item/4000830180460.html) |
-| PART-026 | 3.3V Regulator | 2A, 10pc per lot | input 12V, output > 1A | 1 | 1,69 | [Link](https://www.aliexpress.com/item/4000184190884.html) |
-| PART-027 | IRF3708 MOSFET to run solenoid valves | Note, should have used a relay here as I had some issues with creeping currents and heat | Fully open at Logic Levels (3.3V), 12V range, 10A | 6 | 2,31 | [Link](https://www.aliexpress.com/item/32873147996.html) |
+| PART-024 | Bare Copper Wire | 25mx0.9mm | without enameling  | 2 | 12 | [Link](https://www.aliexpress.com/item/4000308076266.html) |
+| PART-025 | 5V Step Down Converter | input 6-32V, output 5V 2A, | input 12V, output 1A | 1 | 2,18 | [Link](https://www.aliexpress.com/item/32960561943.html) |
+| PART-026 | Micro USB Cable | for code uploading and powering of the USB | 20cm length, capable of data transmission | 1 | 2,18 | get locally |
+| PART-027 | Button | Standard Button 12x12mm | 1 | 1 | [Link](https://www.aliexpress.com/item/32912175986.html) |
 | PART-028 | I2C Display | 1.3&quot;, OLED | I2C communication | 1 | 3,15 | [Link](https://www.aliexpress.com/item/4001145494936.html) |
-| PART-029 | HTU31D Humidity &amp; Temperature Sensor | 0-100% humidity, -40 to +125 C | 0-100% humidity, -10 to +60 C, resistant to condensation | 1 | 2,57 | [Link](https://www.aliexpress.com/item/1005003128666097.html) |
+| PART-029 | HTU31D Humidity &amp; Temperature Sensor | 0-100% humidity, -40 to +125 C, | 0-100% humidity, -10 to +60 C, resistant to condensation, breakout so it can be lead outside of the enclosure | 1 | 2,57 | [Link](https://www.aliexpress.com/item/1005003128666097.html) |
 | PART-030 | Connectors | | 2,3,4 pin connectors, suitable for selected wire diameter | 1 | 1,52 | [Link](https://www.aliexpress.com/item/32836912971.html) |
-| PART-031 | Buttons, Switches, Resistors, cables, etc. | I am too busy to make a detailed list here. Have a look at the electrical schematic and adjust to your use case | | 1 | 10 | | 
+| PART-031 | PCB | See electronics section | | 1 | 15 | | 
 | PART-032 | Barbed Connector adaptor | I 3D printed this from TPU because I realized later that I was missing this part | flexible, convert 9mm outer diameter to 12mm outer diameter | 1 | 0,05 | |
-| | **Total** | | | | **200,95** | |
 
-Things from China have gotten significantly more expensive since I bought these so you might come up with a different price. Also, the soaking hose was the most expensive part. You can choose to use less hose or a different, cheaper kind if you want to save money.
+
+# Electronics
+After a first iteration using a prototype through-hole circuit board and several bug-fixes, I upgraded to a PCB for version 2. The schematics and PCB design can be found at 
+https://www.flux.ai/michox/greenhouse?editor=schematic
+
+Since the MOQ on JLCPCB was 5 pieces I have a few more PCBs left, so if you are interested in one of those, contact me by raising an issue.
+
+# Future Improvements
+Since I regularly upload to the PCB while connected to the main power supply, I decided to use a USB step-down converter rather than an onboard voltage regulator, as I would otherwise have issues with the USB power Supply and the onboard PCB power supply. 
+
+In the future, integrating the power supply for the ESP32 and the RTC Module would be opportunities for improvement. The PCB is also larger than necessary as I wanted to keep my old enclosure, but the PCB could easily be half the size.
 
 # Pictures
 

@@ -18,20 +18,23 @@ void flowCounter()      // Interrupt function
 
 void flowMeasuringTask(void *)
 {
+    int flowMeasurementsIndex = 0;
+    float flowMeasurements[20] = {0};
     pinMode(FLOW_METER, INPUT);
     attachInterrupt(FLOW_METER, flowCounter, RISING); // Setup Interrupt
     sei();                                            // Enable interrupts
     TickType_t xLastWakeTime = xTaskGetTickCount();
-    float flowMeasurements[20] = {0};
-    int flowMeasurementsIndex = 0;
 
     while (true)
     {
-        // Every second, calculate and print litres/minute
+
         vTaskDelayUntil(&xLastWakeTime, 100);
-        xSemaphoreTake(mutex, portMAX_DELAY);
+        xSemaphoreTake(wateringMutex, portMAX_DELAY);
+        #ifdef DEBUG
+        flowCount=10;
+        #endif
         // Pulse frequency (Hz) = 7.5Q, Q is flow rate in L/min.
-        flow = (flowCount * 10.) / 7.5; // (Pulse frequency in Hz) / 7.5Q = flowrate in L/minute
+        flow = (flowCount * 10.) / 75; // (Pulse frequency in Hz) / 7.5Q = flowrate in L/minute
         flowMeasurements[flowMeasurementsIndex++] = flow;
         if (flowMeasurementsIndex >= 20)
         {
@@ -49,6 +52,6 @@ void flowMeasuringTask(void *)
             pump.ticksSincePumpStart++;
         }
         flowCount = 0; // Reset Counter
-        xSemaphoreGive(mutex);
+        xSemaphoreGive(wateringMutex);
     }
 }

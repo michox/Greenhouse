@@ -10,7 +10,6 @@
 #include "Pinout.h"
 void buttonTask(void *)
 {
-
     button_event_t ev;
     QueueHandle_t button_events = button_init(PIN_BIT(BUTTON));
     SemaphoreHandle_t eventSemaphore = xSemaphoreCreateMutex();
@@ -34,19 +33,18 @@ void buttonTask(void *)
                 }
                 else if (currentFrame >= AREA_FRAME_0 && currentFrame <= AREA_FRAME_3)
                 {
-
                     areas[currentFrame - AREA_FRAME_0].switchMode();
                 }
                 else if (currentFrame == TEMPERATURE_FRAME)
                 {
-                    Serial.println(ac.getMinimumTemperature());
                     ac.setMinimumTemperature(areas[0].readDailyTarget() / 3);
                     ac.setMaximumTemperature(areas[1].readDailyTarget() / 3);
                 }
                 else if (currentFrame == CLOCK_FRAME)
                 {
-                    rtc.setDateTime(1, 1, 1, 0, 22, 12, 0, 0);
-                    systemTime.setTime(rtc.getSecond(), rtc.getMinute(), rtc.getHour(), 1, 1, 2021);
+                    rtc.setDateTime(systemTime.getYear(), systemTime.getMonth(), systemTime.getDay(), 12, 0, 0);
+                    auto dateTime = rtc.getDateTime();
+                    systemTime.setTime(dateTime.second, dateTime.minute, dateTime.hour, 30, 5, 2023);
                 }
             }
             else if ((ev.pin == BUTTON) && (ev.event == BUTTON_UP && xSemaphoreGive(eventSemaphore) != pdTRUE))
@@ -57,14 +55,17 @@ void buttonTask(void *)
                     Serial.printf("working++ Display. working : %d\n", working);
                     if (waterAvailable && !pumpIsBlocked)
                         ui.switchToFrame(MAIN_FRAME);
+                    else
+                        ui.switchToFrame(ALERT_FRAME);
                 }
                 else if (currentFrame == CLOCK_FRAME)
                 {
                     working--;
+                    ui.nextFrame();
                     Serial.printf("working-- Display. working : %d\n", working);
                 }
-
-                ui.nextFrame();
+                else
+                    ui.nextFrame();
             }
             xSemaphoreGive(mutex);
         }

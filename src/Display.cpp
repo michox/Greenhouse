@@ -1,6 +1,7 @@
 #include "Display.h"
 #include "Sleep.h"
 #include "Watering.h"
+#include "SnailFence.h"
 #include "AirConditioner.h"
 #include "Clock.h"
 #include "SH1106Wire.h"
@@ -53,6 +54,7 @@ void screenOff(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16
 template <uint areaCount>
 void areaInfo(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
 {
+    xSemaphoreTake(wateringMutex, portMAX_DELAY);
     display->setFont(ArialMT_Plain_16);
     display->clear();
     display->drawString(5, 0, "Feld " + String(areaCount + 1) + " " + areas[areaCount].printModeName());
@@ -61,6 +63,7 @@ void areaInfo(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_
     display->setTextAlignment(TEXT_ALIGN_RIGHT);
     display->drawString(128, 0, String(areas[areaCount].readDailyTarget(), 0));
     display->setTextAlignment(TEXT_ALIGN_LEFT);
+    xSemaphoreGive(wateringMutex);
 }
 
 void temperatureConfig(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
@@ -91,6 +94,8 @@ void waterLowFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, i
     }
     else if (!waterAvailable)
         display->drawString(17, 12, "Wasser leer!");
+    else if (snail_fence_short_circuit)
+        display->drawString(17, 12, "Scheckenzaun inaktiv!");
     // else if (waterLow)
     //     display->drawString(17, 12, "Wasser niedrig");
 }
@@ -122,6 +127,7 @@ bool displayTimeout()
 void displayTask(void *)
 {
     Serial.print("Starting display Task...");
+    vTaskDelay(10); // wait 5 ticks for the other processes to complete initializing
     xSemaphoreTake(mutex, portMAX_DELAY);
     ui.setTargetFPS(24);
 
@@ -166,16 +172,18 @@ void displayTask(void *)
     {
         xSemaphoreTake(mutex, portMAX_DELAY);
         int timeBudget = ui.update();
+        xSemaphoreGive(mutex);
         if (timeBudget > 0)
         {
             if (displayTimeout())
             {
                 working--;
-                Serial.printf("working-- Display. working : %d\n", working);
+                xSemaphoreTake(mutex, portMAX_DELAY);
                 ui.switchToFrame(SCREEN_OFF);
+                xSemaphoreGive(mutex);
+                Serial.printf("working-- Display. working : %d\n", working);
             }
             vTaskDelay(timeBudget / portTICK_PERIOD_MS);
         }
-        xSemaphoreGive(mutex);
     }
 }

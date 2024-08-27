@@ -1,4 +1,5 @@
 #pragma once
+#include <FreeRTOS.h>
 
 #define RELAY_ON HIGH
 #define RELAY_OFF LOW
@@ -17,9 +18,6 @@
 #define AREA_SOLENOID_4 GPIO_NUM_4
 
 #define FLOW_METER GPIO_NUM_27
-
-#define SDA GPIO_NUM_22
-#define SCL GPIO_NUM_21
 
 #define WATER_AVAILABLE GPIO_NUM_23
 

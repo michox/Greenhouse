@@ -11,7 +11,7 @@ void goToSleep()
     // preferences.putFloat("Water3", spentWaterVolume3);
     // preferences.putFloat("Water4", spentWaterVolume4);
 
-    esp_sleep_enable_ext0_wakeup(BUTTON, 0);
+    esp_sleep_enable_ext0_wakeup(BUTTON, 1);
 
     esp_sleep_enable_timer_wakeup(SAMPLE_INTERVAL);
     // Go to sleep now

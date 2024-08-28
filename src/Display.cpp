@@ -177,11 +177,11 @@ void displayTask(void *)
         {
             if (displayTimeout())
             {
-                working--;
                 xSemaphoreTake(mutex, portMAX_DELAY);
                 ui.switchToFrame(SCREEN_OFF);
                 xSemaphoreGive(mutex);
                 Serial.printf("working-- Display. working : %d\n", working);
+                working--;
             }
             vTaskDelay(timeBudget / portTICK_PERIOD_MS);
         }

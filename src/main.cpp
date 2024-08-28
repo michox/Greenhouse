@@ -30,13 +30,13 @@ void setup()
   xTaskCreate(airConditioningTask, "ac", configMINIMAL_STACK_SIZE + 5000, NULL, 10, NULL);
   xTaskCreate(displayTask, "display", configMINIMAL_STACK_SIZE + 5000, NULL, 20, NULL);
   xTaskCreate(clockTask, "clock", configMINIMAL_STACK_SIZE + 5000, NULL, 20, NULL);
+  Wire.setClock(10000);
   Serial.printf("Setup complete\n");
 }
 
 void loop()
 {
   vTaskDelay(500/portTICK_PERIOD_MS);
-  Serial.println("spent so far" + String(spentWaterVolume1));
   if (!working)
   {
     goToSleep();

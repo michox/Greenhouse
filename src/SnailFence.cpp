@@ -44,9 +44,8 @@ void SnailFenceController::set_fence_state(bool state) {
 
 bool SnailFenceController::read_snail_monitor() {
     set_fence_state(HIGH);
-    int voltage = analogRead(SNAIL_MONITOR);
-    // Assuming 3.3V corresponds to 4095 in analogRead for a 12-bit ADC
-    return (voltage < 1000);  // Define the appropriate threshold
+    int voltage = digitalRead(SNAIL_MONITOR);
+    return voltage;  
 }
 
 SnailFenceController snailFenceController;

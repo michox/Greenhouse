@@ -46,15 +46,14 @@ void clockTask(void *)
         xSemaphoreGive(wateringMutex);
     }
     xSemaphoreGive(mutex);
+
     working--;
+    vTaskDelay(portMAX_DELAY);
     while (true)
     {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        vTaskDelay(10000 / portTICK_PERIOD_MS);
         working++;
         xSemaphoreTake(mutex, portMAX_DELAY);
-        auto dateTime = rtc.getDateTime();
-        systemTime.setTime(dateTime.second, dateTime.minute, dateTime.hour, 30, 5, 2023);
-        Serial.println("its " + String(dateTime.minute));
         if (rtc.alarmActive())
         {
             uint retry = 0;

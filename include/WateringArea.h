@@ -44,6 +44,8 @@ public:
     void switchMode()
     {
         mode = mode == AUTO_MODE ? MANU_MODE : AUTO_MODE;
+        mode = MANU_MODE ; //disabling auto mode for the moment
+
         String storageAddress = "mode" + String(solenoidPin);
         preferences.putInt(storageAddress.c_str(), mode);
     }
@@ -56,7 +58,7 @@ public:
     float readDailyTarget()
     {
         uint reading = analogRead(potentiometerPin);
-        dailyTarget = map(reading, 0, 4096, 0, 100);
+        dailyTarget = map(reading, 0, 4096, 0, 80); //depends on the potentiometer type and the scale you use. Mine maxed out at position 80
         return dailyTarget;
     }
 

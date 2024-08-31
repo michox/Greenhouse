@@ -59,7 +59,7 @@ void areaInfo(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_
     display->clear();
     display->drawString(5, 0, "Feld " + String(areaCount + 1) + " " + areas[areaCount].printModeName());
     display->drawString(5, 18, "Gegossen: " + String(areas[areaCount].spentLiters(), 1) + " L");
-    display->drawString(5, 36, "Feucht.: " + String(areas[areaCount].currentHumidity(), 0) + " %");
+    //display->drawString(5, 36, "Feucht.: " + String(areas[areaCount].currentHumidity(), 0) + " %");
     display->setTextAlignment(TEXT_ALIGN_RIGHT);
     display->drawString(128, 0, String(areas[areaCount].readDailyTarget(), 0));
     display->setTextAlignment(TEXT_ALIGN_LEFT);
@@ -150,6 +150,8 @@ void displayTask(void *)
 
     // Initialising the UI will init the display too.
     ui.init();
+    
+    display.flipScreenVertically();
 
     if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0)
     {

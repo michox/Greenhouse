@@ -1,6 +1,6 @@
 # Greenhouse
 
-My Mother grows her own food as a hobby and is very passionate about it. I usually benefit a lot from this hobby since as a vegetarian I get basically all my food from my mother&#39;s garden during the summer months. On top of that, organic home-grown food is not only much richer in nutrients and free of pesticides, it also tastes a lot better in my experience. Since I will be moving out and will no longer be able to help water the plants, I decided to use my engineering skills to build her an automated gardening system which takes care of her greenhouse and the three 5 m² raised bed fields.
+My mother grows her own food as a hobby and is very passionate about it. I usually benefit a lot from this hobby since as a vegetarian I get basically all my food from my mother&#39;s garden during the summer months. On top of that, organic home-grown food is not only much richer in nutrients and free of pesticides, it also tastes a lot better in my experience. Since I will be moving out and will no longer be able to help water the plants, I decided to use my engineering skills to build her an automated gardening system which takes care of her greenhouse and the three 5 m² raised bed fields.
 
 # User Requirements
 
@@ -8,7 +8,7 @@ After talking to my mother about her needs with the system, I came up with the f
 
 | **ID** | **Description** |
 | --- | --- |
-| UREQ-001 | Must Deliver water to 4 separate fields with an average of 20L per day on a dry, sunny day and 0-5L on a cloudy or rainy day |
+| UREQ-001 | Must deliver water to 4 separate fields with an average of 20L per day on a dry, sunny day and 0-5L on a cloudy or rainy day |
 | UREQ-002 | Could keep the soil at a configured moisture level between 0-100% |
 | UREQ-003 | Must ventilate when the temperature in the green house reaches a user set temperature |
 | UREQ-004 | Must heat actively when the temperature in the green house drops below a user set temperature |
@@ -115,8 +115,9 @@ Since my mother did not want me to spend much money, I ordered most parts from A
 | PART-028 | I2C Display | 1.3&quot;, OLED | I2C communication | 1 | 3,15 | [Link](https://www.aliexpress.com/item/4001145494936.html) |
 | PART-029 | HTU31D Humidity &amp; Temperature Sensor | 0-100% humidity, -40 to +125 C, | 0-100% humidity, -10 to +60 C, resistant to condensation, breakout so it can be lead outside of the enclosure | 1 | 2,57 | [Link](https://www.aliexpress.com/item/1005003128666097.html) |
 | PART-030 | Connectors | | 2,3,4 pin connectors, suitable for selected wire diameter | 1 | 1,52 | [Link](https://www.aliexpress.com/item/32836912971.html) |
-| PART-031 | PCB | See electronics section | | 1 | 15 | | 
-| PART-032 | Barbed Connector adaptor | I 3D printed this from TPU because I realized later that I was missing this part | flexible, convert 9mm outer diameter to 12mm outer diameter | 1 | 0,05 | |
+| PART-031 | Potentiometers | WTH118 linear Potentiometer | fully enclosed, else there are issues with humidity | 4 | 1,30€ | [Link](https://de.aliexpress.com/item/1005003579523720.html) | 
+| PART-032 | PCB | See electronics folder for detailed BOM | | 1 | 15 | ordered from JLCPCB using the files in the electronics folder | 
+| PART-033 | Barbed Connector adaptor | I 3D printed this from TPU because I realized later that I was missing this part | flexible, convert 9mm outer diameter to 12mm outer diameter | 1 | 0,05 | |
 
 
 # Electronics
@@ -129,6 +130,8 @@ Since the MOQ on JLCPCB was 5 pieces I have a few more PCBs left, so if you are 
 Since I regularly upload to the PCB while connected to the main power supply, I decided to use a USB step-down converter rather than an onboard voltage regulator, as I would otherwise have issues with the USB power Supply and the onboard PCB power supply. 
 
 In the future, integrating the power supply for the ESP32 and the RTC Module would be opportunities for improvement. The PCB is also larger than necessary as I wanted to keep my old enclosure, but the PCB could easily be half the size.
+
+I will also consider designing an enclosure for 3D printing.
 
 # Pictures
 

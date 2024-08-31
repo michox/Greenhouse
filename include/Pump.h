@@ -35,7 +35,7 @@ public:
     bool notBlocked()
     {
         if (pumpIsBlocked) return false;
-        if (ticksSincePumpStart < 30)
+        if (ticksSincePumpStart < 300)
         {
             pumpIsBlocked = false;
         }

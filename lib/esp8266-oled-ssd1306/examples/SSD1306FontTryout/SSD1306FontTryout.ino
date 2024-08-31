@@ -1,9 +1,6 @@
 /**
    The MIT License (MIT)
 
-   Copyright (c) 2018 by ThingPulse, Daniel Eichhorn
-   Copyright (c) 2018 by Fabrice Weinberg
-
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
    in the Software without restriction, including without limitation the rights
@@ -28,20 +25,13 @@
 
 */
 
-#if defined(ESP8266)
-#include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
-#elif defined(ESP32)
-#include <WiFi.h>
-#include <ESPmDNS.h>
-#include <WiFiUdp.h>
-#endif
-
-#include <ArduinoOTA.h>
-
-const char *ssid         = "[Your SSID]";
-const char *password     = "[Your Password]";
-
+/**
+   Using this sketch, you can try out the fonts. Simply generate new font files
+   at https://oleddisplay.squix.ch/ , download them and add to your sketch with
+   "Sketch / Add file" in the Arduino IDE. Then include them and add their names
+   to loop(). You'll see the name of the font on the serial monitor as the
+   sketch cycles through them.
+*/
 
 // Include the correct display library
 // For a connection via I2C using Wire include
@@ -80,48 +70,63 @@ const char *password     = "[Your Password]";
 SSD1306Wire display(0x3c, SDA, SCL);   // ADDRESS, SDA, SCL  -  SDA and SCL usually populate automatically based on your board's pins_arduino.h e.g. https://github.com/esp8266/Arduino/blob/master/variants/nodemcu/pins_arduino.h
 // SH1106Wire display(0x3c, SDA, SCL);
 
+// Include all the font files you add to the Sketch
+#include "Dialog_plain_8.h"
+#include "Dialog_plain_7.h"
+#include "Dialog_plain_6.h"
+
+
+// This will call the function doPrint() with the name;
+// once without and once with quotes.
+#define DO_PRINT(a) doPrint(a, #a); 
+
 
 void setup() {
-  WiFi.begin ( ssid, password );
-
-  // Wait for connection
-  while ( WiFi.status() != WL_CONNECTED ) {
-    delay ( 10 );
-  }
-
   display.init();
-  display.flipScreenVertically();
+
+  // display.flipScreenVertically();
+
   display.setContrast(255);
-
-  ArduinoOTA.begin();
-  ArduinoOTA.onStart([]() {
-    display.clear();
-    display.setFont(ArialMT_Plain_10);
-    display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
-    display.drawString(display.getWidth() / 2, display.getHeight() / 2 - 10, "OTA Update");
-    display.display();
-  });
-
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    display.drawProgressBar(4, 32, 120, 8, progress / (total / 100) );
-    display.display();
-  });
-
-  ArduinoOTA.onEnd([]() {
-    display.clear();
-    display.setFont(ArialMT_Plain_10);
-    display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
-    display.drawString(display.getWidth() / 2, display.getHeight() / 2, "Restart");
-    display.display();
-  });
-
-  // Align text vertical/horizontal center
-  display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
-  display.setFont(ArialMT_Plain_10);
-  display.drawString(display.getWidth() / 2, display.getHeight() / 2, "Ready for OTA:\n" + WiFi.localIP().toString());
-  display.display();
 }
 
 void loop() {
-  ArduinoOTA.handle();
+  
+  // These three fonts come with the display driver
+  DO_PRINT(ArialMT_Plain_10);
+  DO_PRINT(ArialMT_Plain_16);
+  DO_PRINT(ArialMT_Plain_24);
+
+  // These three I had generated and added as files
+  DO_PRINT(Dialog_plain_6);
+  DO_PRINT(Dialog_plain_7);
+  DO_PRINT(Dialog_plain_8);
+
+}
+
+
+void doPrint(const uint8_t* font, String fontname) {
+  Serial.println(fontname);
+
+  display.cls();
+  display.setFont(font);
+
+  display.println("Lorem ipsum dolor sit amet, consectetur");
+  display.println("adipiscing elit, sed do eiusmod tempor");
+  display.println("incididunt ut labore et dolore magna aliqua.");
+  display.println("Ut enim ad minim veniam, quis nostrud exercitation");
+  display.println("ullamco laboris nisi ut aliquip ex ea commodo");
+  display.println("consequat. Duis aute irure dolor in reprehenderit");
+  display.println("in voluptate velit esse cillum dolore eu fugiat");
+  display.println("nulla pariatur. Excepteur sint occaecat cupidatat");
+  display.println("non proident, sunt in culpa qui officia deserunt.");
+
+  delay(5000);
+
+}
+
+// The library comes with fonts as a const uint8_t array, the site at
+// https://oleddisplay.squix.ch/ generates them as const char array. This code
+// converts one in the other to make sure both work here.
+void doPrint(const char* font, String fontname) {
+  doPrint(static_cast<const uint8_t*>(reinterpret_cast<const void*>(font)), fontname);
 }

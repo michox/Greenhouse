@@ -14,6 +14,7 @@ void goToSleep()
     esp_sleep_enable_ext0_wakeup(BUTTON, 1);
 
     esp_sleep_enable_timer_wakeup(SAMPLE_INTERVAL);
+    gpio_deep_sleep_hold_en();
     // Go to sleep now
     esp_deep_sleep_start();
 }

@@ -12,7 +12,7 @@ public:
     void begin()
     {
         pinMode(PUMP, OUTPUT);
-        digitalWrite(PUMP, RELAY_OFF);
+        stop();
     }
     void run()
     {
@@ -20,12 +20,16 @@ public:
         {
             ticksSincePumpStart = 0;
         }
+        gpio_hold_dis(PUMP); //to enable hold during deep sleep and keep the pins pulled low.
         digitalWrite(PUMP, RELAY_ON);
+        gpio_hold_en(PUMP);
     }
     void stop()
     {
         ticksSincePumpStart = -1;
+        gpio_hold_dis(PUMP);
         digitalWrite(PUMP, RELAY_OFF);
+        gpio_hold_en(PUMP);
     }
     bool isRunning()
     {
@@ -35,12 +39,13 @@ public:
     bool notBlocked()
     {
         if (pumpIsBlocked) return false;
-        if (ticksSincePumpStart < 300)
+        if (ticksSincePumpStart < 100)
         {
             pumpIsBlocked = false;
         }
         else if (averageFlow > 0.1)
         {
+            Serial.println("Pump is running, flow: " + String(averageFlow) + " l/h");
             pumpIsBlocked = false;
         }
         else

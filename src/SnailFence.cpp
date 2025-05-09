@@ -24,22 +24,28 @@ void SnailFenceController::init() {
 }
 
 void SnailFenceController::check_short_circuit() {
-    if (read_snail_monitor()) {
+    if (read_snail_monitor() == LOW) {
         snail_fence_short_circuit = true;
     }
+    else
+        snail_fence_short_circuit = false;
 }
 
 void SnailFenceController::activate_fence() {
-    gpio_hold_en(SNAIL_FENCE);  // Keep the fence active during sleep
+    set_fence_state(HIGH);
 }
 
 void SnailFenceController::deactivate_fence() {
-    gpio_hold_dis(SNAIL_FENCE);
+    
+    set_fence_state(LOW);
 }
 
 
 void SnailFenceController::set_fence_state(bool state) {
+    gpio_hold_dis(SNAIL_FENCE); //disable pad holding
     digitalWrite(SNAIL_FENCE, state ? HIGH : LOW);
+    gpio_hold_en(SNAIL_FENCE); //enable pad holding so that the signal is held during deep sleep.
+
 }
 
 bool SnailFenceController::read_snail_monitor() {

@@ -174,6 +174,7 @@ void displayTask(void *)
     {
         xSemaphoreTake(mutex, portMAX_DELAY);
         int timeBudget = ui.update();
+        //Serial.printf("time budget : %d\n", timeBudget);
         xSemaphoreGive(mutex);
         if (timeBudget > 0)
         {

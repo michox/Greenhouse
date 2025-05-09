@@ -244,7 +244,7 @@ int16_t OLEDDisplayUi::update(){
     this->tick();
   }
 #ifdef ARDUINO
-  return this->updateInterval - (millis() - frameStart);
+  return this->updateInterval - (millis() - frameStart); // shouldn't this be timeBudget?
 #elif __MBED__
   return this->updateInterval - (t.read_ms() - frameStart);
 #else
@@ -274,8 +274,9 @@ void OLEDDisplayUi::tick() {
       if (this->state.ticksSinceLastStateSwitch >= this->ticksPerFrame){
           if (this->autoTransition){
             this->state.frameState = IN_TRANSITION;
+            this->state.ticksSinceLastStateSwitch = 0;
           }
-          this->state.ticksSinceLastStateSwitch = 0;
+          // If autoTransition is disabled, do not reset ticksSinceLastStateSwitch
       }
       break;
   }

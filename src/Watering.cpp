@@ -23,7 +23,7 @@ void wateringTask(void *)
   while (true)
   {
     working++;
-    Serial.printf("working++ watering. working : %d\n", working);
+    Serial.printf("working++ checking water need. working : %d\n", working);
 
     for (auto &area : areas)
     {

@@ -92,10 +92,14 @@ public:
             while (!warmEnough())
             {
                 Serial.println("heating");
+                gpio_hold_dis(HEATER);
                 digitalWrite(HEATER, RELAY_ON);
+                gpio_hold_en(HEATER);
                 vTaskDelay(3000 / portTICK_PERIOD_MS);
             }
+            gpio_hold_dis(HEATER);
             digitalWrite(HEATER, RELAY_OFF);
+            gpio_hold_en(HEATER);
             working--;
             Serial.printf("working-- heater. working : %d\n", working);
         }
@@ -107,10 +111,14 @@ public:
             while (!coolEnough())
             {
                 Serial.println("Cooling...");
+                gpio_hold_dis(FAN);
                 digitalWrite(FAN, RELAY_ON);
+                gpio_hold_en(FAN);
                 vTaskDelay(3000 / portTICK_PERIOD_MS);
             }
+            gpio_hold_dis(FAN);
             digitalWrite(FAN, RELAY_OFF);
+            gpio_hold_en(FAN);
             working--;
             Serial.printf("working-- fan. working : %d\n", working);
         }

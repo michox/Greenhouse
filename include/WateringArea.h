@@ -22,17 +22,23 @@ enum WATERING_MODE
 class WateringArea
 {
 private:
-    uint solenoidPin;
-    uint potentiometerPin;
+    gpio_num_t solenoidPin;
+    gpio_num_t potentiometerPin;
     Hygrometer *hygro;
 
     char *preferencesKey;
     float dailyTarget; // l
     uint64_t timeOfLastWaterCalculation = 0;
 
+    void setValve(int position){
+        gpio_hold_dis(solenoidPin);
+        digitalWrite(solenoidPin, position);
+        gpio_hold_en(solenoidPin);
+    }
+
 public:
     WATERING_MODE mode = MANU_MODE;
-    WateringArea(uint solenoidPin, uint potentiometerPin, Hygrometer *hygro) : solenoidPin(solenoidPin), potentiometerPin(potentiometerPin), hygro(hygro)
+    WateringArea(gpio_num_t solenoidPin, gpio_num_t potentiometerPin, Hygrometer *hygro) : solenoidPin(solenoidPin), potentiometerPin(potentiometerPin), hygro(hygro)
     {
         adcAttachPin(potentiometerPin);
         String storageAddress = "mode" + String(solenoidPin);
@@ -57,9 +63,24 @@ public:
 
     float readDailyTarget()
     {
-        uint reading = analogRead(potentiometerPin);
-        dailyTarget = map(reading, 0, 4096, 0, 80); //depends on the potentiometer type and the scale you use. Mine maxed out at position 80
-        return dailyTarget;
+        static uint16_t lastReadings[5] = {0};
+        static uint index = 0;
+        static uint count = 0;
+        float reading = analogRead(potentiometerPin);
+        Serial.println("Reading daily target for area: " + String(solenoidPin) + " mode: " + printModeName());
+        Serial.println("Reading: " + String(reading));
+        lastReadings[index] = reading;
+        index = (index + 1) % 5;
+        if (count < 5) count++;
+
+        float sum = 0;
+        for (uint i = 0; i < count; ++i)
+        {
+            sum += lastReadings[i];
+        }
+        reading = sum / count;
+        return ceil(map(reading, 0, 4096, 0, 80)); // based on your poti scale
+
     }
 
     float currentHumidity()
@@ -100,7 +121,11 @@ public:
         case AREA_SOLENOID_4:
             spentWaterVolume4 = newVolume;
             break;
+        default:
+            Serial.println("Error: invalid solenoid pin");
+            break;
         }
+
     }
 
     float spentLiters()
@@ -122,13 +147,16 @@ public:
 
     bool water()
     {
+        #ifdef DEBUG 
+        Serial.println("Watering area: " + String(solenoidPin) + " mode: " + printModeName() + " needs more water: " + String(needsMoreWater()));
+        #endif
         xSemaphoreTake(wateringMutex, portMAX_DELAY);
         if (pump.notBlocked())
         {
             if (waterAvailable && needsMoreWater())
             {
                 countWater();
-                digitalWrite(solenoidPin, RELAY_ON);
+                setValve(RELAY_ON);
                 if (!pump.isRunning())
                 {
                     pump.run();
@@ -138,7 +166,7 @@ public:
             }
             else
             {
-                digitalWrite(solenoidPin, RELAY_OFF);
+                setValve(RELAY_OFF);
                 pump.stop();
                 xSemaphoreGive(wateringMutex);
                 return false;
@@ -169,4 +197,5 @@ public:
         float spentWaterSinceLastCalculation = flow / 60. * millisSinceLastCalculation; // / 1000 ms/s *1000 ml/l
         setSpentWaterVolume(getSpentWaterVolume() + spentWaterSinceLastCalculation);
     }
+    
 };

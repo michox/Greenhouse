@@ -4,6 +4,6 @@
 extern PCF8563_Class rtc;
 extern ESP32Time systemTime;
 
-#define RESET_HOUR 20
+#define RESET_HOUR 5
 
 void clockTask(void *);
